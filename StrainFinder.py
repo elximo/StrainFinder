@@ -1,4 +1,5 @@
-import argparse, copy, cPickle, itertools, os.path, random, sys, time, uuid
+import argparse, copy, itertools, os.path, random, sys, time, uuid
+import _pickle as cPickle
 import numpy as np
 import scipy.spatial.distance as ssd
 from openopt import NLP, MINLP
@@ -110,10 +111,10 @@ def parse_args():
     group3 = parser.add_argument_group('Search')
     group3.add_argument('-N', help='Number of strains to estimate', type=int, default=None)
     group3.add_argument('--random', help='Use random strain genotypes (default = dominant SNPs)', action='store_true', default=False)
-    group3.add_argument('--s_reps', help='Number of searches (shallow)', type=int, default=sys.maxint)
-    group3.add_argument('--s_iter', help='Number of iterations (shallow)', type=int, default=sys.maxint)
+    group3.add_argument('--s_reps', help='Number of searches (shallow)', type=int, default=sys.maxsize)
+    group3.add_argument('--s_iter', help='Number of iterations (shallow)', type=int, default=sys.maxsize)
     group3.add_argument('--d_reps', help='Number of searches (deep)', type=int, default=0)
-    group3.add_argument('--d_iter', help='Number of iterations (deep)', type=int, default=sys.maxint)
+    group3.add_argument('--d_iter', help='Number of iterations (deep)', type=int, default=sys.maxsize)
     group3.add_argument('--n_keep', help='Number of searches to keep', type=int, default=0)
     group3.add_argument('--converge', help='Search until convergence', action='store_true', default=False)
     group3.add_argument('--robust', help='Robust EM (pay penalty to use uniform frequencies)?', action='store_true', default=False)
@@ -748,7 +749,7 @@ class EM():
         return self
     
     
-    def shallow_search(self, n, n_reps=sys.maxint, n_iter=sys.maxint, n_keep=None, c=None, exhaustive=False, random=False, robust=False, penalty=None, dtol=None, ftol=None, ntol=None, max_reps=sys.maxint, max_time=sys.maxint, log_fn=None, out_fn=None):
+    def shallow_search(self, n, n_reps=sys.maxsize, n_iter=sys.maxsize, n_keep=None, c=None, exhaustive=False, random=False, robust=False, penalty=None, dtol=None, ftol=None, ntol=None, max_reps=sys.maxsize, max_time=sys.maxsize, log_fn=None, out_fn=None):
         message(self, 'Running shallow search')
         
         # Quickly search initial conditions
@@ -775,7 +776,7 @@ class EM():
         return self
     
     
-    def deep_search(self, n, n_reps=1, n_iter=sys.maxint, n_keep=None, c=None, exhaustive=False, dtol=None, ftol=None, ntol=None, max_time=sys.maxint, log_fn=None, out_fn=None):
+    def deep_search(self, n, n_reps=1, n_iter=sys.maxsize, n_keep=None, c=None, exhaustive=False, dtol=None, ftol=None, ntol=None, max_time=sys.maxsize, log_fn=None, out_fn=None):
         
         # Get indices of estimates for deep search
         if len(self.estimates) == 0:
